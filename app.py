@@ -1,19 +1,23 @@
-from app import create_app
-from dotenv import load_dotenv
-import os
+from flask import Flask
+from config import Config
+from extensions import db, migrate, bcrypt, cors
 
-# Load .env manually
-load_dotenv()
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-app = create_app()
+    # Init extensions
+    db.init_app(app)
+    migrate.init_app(app, db)
+    bcrypt.init_app(app)
+    cors.init_app(app)
 
+    # Register blueprints here later
+    # from resources.customers import customers_bp
+    # app.register_blueprint(customers_bp, url_prefix="/api/customers")
 
-
+    return app
 
 if __name__ == "__main__":
-     # Set debug/reload mode via FLASK_ENV
-    debug = os.getenv("FLASK_ENV") == "development"
-    app.run(debug=debug)
-
-# pipenv install flask flask-sqlalchemy flask-migrate flask-bcrypt flask-cors python-dotenv pyjwt
-# pipenv shell
+    app = create_app()
+    app.run(debug=True)
