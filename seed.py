@@ -1,40 +1,46 @@
 from app import create_app
 from extensions import db
-from models import User, Product, CartItem, Order
+from models import User, Product, CartItem, Order, OrderItem
 
 app = create_app()
 
 with app.app_context():
-    print("Seeding database...")
+    db.drop_all()
+    db.create_all()
 
-    # Clear tables first
-    CartItem.query.delete()
-    Order.query.delete()
-    Product.query.delete()
-    User.query.delete()
-
-    # Create users
-    admin = User(username="admin", email="admin@elimu.com", role="admin")
+    # Create Users
+    admin = User(username="admin", email="admin@example.com", role="admin")
     admin.password_hash = "adminpass"
 
-    user = User(username="john", email="john@elimu.com")
-    user.password_hash = "johnpass"
+    user1 = User(username="john_doe", email="john@example.com")
+    user1.password_hash = "johnspass"
 
-    db.session.add_all([admin, user])
+    db.session.add_all([admin, user1])
     db.session.commit()
 
-    # Create products
-    p1 = Product(title="A4 Notebook", description="Lined A4 notebook", price=350.0, stock=50)
-    p2 = Product(title="Ballpoint Pen", description="Blue ink pen", price=50.0, stock=200)
-    p3 = Product(title="Stapler", description="Heavy-duty stapler", price=750.0, stock=30)
+    # Create Products
+    product1 = Product(title="Custom Notebook", description="A5 ruled pages", price=450.00, stock=100)
+    product2 = Product(title="Branded Pen", description="Blue ink", price=150.00, stock=200)
 
-    db.session.add_all([p1, p2, p3])
+    db.session.add_all([product1, product2])
     db.session.commit()
 
-    # Add cart items
-    cart_item = CartItem(user_id=user.id, product_id=p1.id, quantity=2)
-    db.session.add(cart_item)
+    # CartItem for user1
+    cart1 = CartItem(user_id=user1.id, product_id=product1.id, quantity=2)
+    cart2 = CartItem(user_id=user1.id, product_id=product2.id, quantity=3)
 
+    db.session.add_all([cart1, cart2])
     db.session.commit()
 
-    print("✅ Done seeding!")
+    # Create an order for user1
+    order = Order(user_id=user1.id, status='completed')
+    db.session.add(order)
+    db.session.commit()
+
+    order_item1 = OrderItem(order_id=order.id, product_id=product1.id, quantity=2, price_at_purchase=450.00)
+    order_item2 = OrderItem(order_id=order.id, product_id=product2.id, quantity=3, price_at_purchase=150.00)
+
+    db.session.add_all([order_item1, order_item2])
+    db.session.commit()
+
+    print("🌱 Database seeded successfully!")
