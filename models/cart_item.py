@@ -12,6 +12,10 @@ class CartItem(db.Model, SerializerMixin):
 
     serialize_rules = ('-user.cart_items', '-product.cart_items',)
 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+
+
     @validates("quantity")
     def validate_quantity(self, key, value):
         if not isinstance(value, int) or value < 1:
