@@ -1,12 +1,18 @@
 from flask import Flask
 from config import Config
 from extensions import db, migrate, bcrypt, cors
+from flask_jwt_extended import JWTManager
+from resources import api_bp
+
+jwt = JWTManager()
 
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    jwt.init_app(app)
+    app.register_blueprint(api_bp, url_prefix="/api")
 
     # Init extensions
     db.init_app(app)
