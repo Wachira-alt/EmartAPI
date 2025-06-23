@@ -12,7 +12,7 @@ class Product(db.Model, SerializerMixin):
     image_url = db.Column(db.String)
     stock = db.Column(db.Integer, default=0)
 
-    cart_items = db.relationship('CartItem', backref='product', cascade="all, delete")
+    cart_items = db.relationship('CartItem', back_populates='product', cascade="all, delete")
 
     serialize_rules = ('-cart_items.product',)
 

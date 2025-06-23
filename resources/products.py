@@ -18,11 +18,13 @@ class ProductListResource(Resource):
             return {"error": "Admin access required"}, 403
 
         data = request.get_json()
+
         new_product = Product(
             title=data.get("title"),
             description=data.get("description"),
             price=data.get("price"),
-            stock=data.get("stock")
+            stock=data.get("stock"),
+            image_url=data.get("image_url") or "https://via.placeholder.com/150"
         )
         db.session.add(new_product)
         db.session.commit()
@@ -44,7 +46,7 @@ class ProductDetailResource(Resource):
         product = Product.query.get_or_404(id)
         data = request.get_json()
 
-        for attr in ["title", "description", "price", "stock"]:
+        for attr in ["title", "description", "price", "stock", "image_url"]:
             if attr in data:
                 setattr(product, attr, data[attr])
 

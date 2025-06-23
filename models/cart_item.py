@@ -12,8 +12,8 @@ class CartItem(db.Model, SerializerMixin):
 
     serialize_rules = ('-user.cart_items', '-product.cart_items',)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    products = db.relationship('Product', back_populates='cart_items', cascade="all, delete")
+
 
 
     @validates("quantity")

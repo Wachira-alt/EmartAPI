@@ -11,8 +11,8 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(10), default='user')  # 'user' or 'admin'
 
-    cart_items = db.relationship('CartItem', backref='user', cascade="all, delete")
-    orders = db.relationship('Order', backref='user', cascade="all, delete")
+    cart_items = db.relationship('CartItem', back_populates='user', cascade="all, delete")
+    orders = db.relationship('Order', back_populates='user', cascade="all, delete")
 
     serialize_rules = ('-cart_items.user', '-orders.user',)
 

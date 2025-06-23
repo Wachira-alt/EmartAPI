@@ -11,7 +11,7 @@ class Order(db.Model, SerializerMixin):
     status = db.Column(db.String(20), default='pending')
     
 
-    order_items = db.relationship('OrderItem', backref='order', cascade="all, delete-orphan")
+    order_items = db.relationship('OrderItem', back_populates='order', cascade="all, delete-orphan")
 
 
     serialize_rules = ('-user.orders', '-order_items.order',)
