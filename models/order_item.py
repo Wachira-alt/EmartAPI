@@ -1,6 +1,6 @@
 from extensions import db
-from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import validates
+from sqlalchemy_serializer import SerializerMixin
 
 class OrderItem(db.Model, SerializerMixin):
     __tablename__ = 'order_items'
@@ -13,9 +13,12 @@ class OrderItem(db.Model, SerializerMixin):
     quantity = db.Column(db.Integer, nullable=False)
     price_at_purchase = db.Column(db.Float, nullable=False)
 
-    product = db.relationship('Product')  # lightweight join
+    order = db.relationship('Order', back_populates='order_items')
+    product = db.relationship('Product', back_populates='order_items')
 
-    serialize_rules = ('-order.order_items',)
+    # serialize_rules = ('-order.order_items', '-product.order_items',)
+    serialize_rules = ('-order', '-product',)
+
 
     @validates("quantity")
     def validate_quantity(self, key, value):

@@ -14,7 +14,9 @@ class User(db.Model, SerializerMixin):
     cart_items = db.relationship('CartItem', back_populates='user', cascade="all, delete")
     orders = db.relationship('Order', back_populates='user', cascade="all, delete")
 
-    serialize_rules = ('-cart_items.user', '-orders.user',)
+    # serialize_rules = ('-cart_items.user', '-orders.user',)
+    serialize_rules = ('-cart_items', '-orders',)
+
 
     @property
     def password_hash(self):

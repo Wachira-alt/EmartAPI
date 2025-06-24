@@ -10,10 +10,11 @@ class CartItem(db.Model, SerializerMixin):
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
 
-    serialize_rules = ('-user.cart_items', '-product.cart_items',)
+    user = db.relationship("User", back_populates="cart_items")
+    product = db.relationship("Product", back_populates="cart_items")
 
-    products = db.relationship('Product', back_populates='cart_items', cascade="all, delete")
-
+    # serialize_rules = ('-user.cart_items', '-product.cart_items',)
+    serialize_rules = ('-user', '-product',)
 
 
     @validates("quantity")

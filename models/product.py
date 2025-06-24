@@ -13,8 +13,11 @@ class Product(db.Model, SerializerMixin):
     stock = db.Column(db.Integer, default=0)
 
     cart_items = db.relationship('CartItem', back_populates='product', cascade="all, delete")
+    order_items = db.relationship('OrderItem', back_populates='product', cascade="all, delete")
 
-    serialize_rules = ('-cart_items.product',)
+    # serialize_rules = ('-cart_items.product', '-order_items.product',)
+    serialize_rules = ('-cart_items', '-order_items',)
+
 
     @validates("price")
     def validate_price(self, key, value):
