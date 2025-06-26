@@ -4,6 +4,7 @@ from models import Product
 from extensions import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.user import User
+# from utils.decorators import admin_required
 
 class ProductListResource(Resource):
     def get(self):
@@ -11,6 +12,7 @@ class ProductListResource(Resource):
         return [p.to_dict() for p in products], 200
 
     @jwt_required()
+    # @admin_required
     def post(self):
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
@@ -37,6 +39,7 @@ class ProductDetailResource(Resource):
         return product.to_dict(), 200
 
     @jwt_required()
+    # @admin_required
     def patch(self, id):
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
@@ -54,6 +57,7 @@ class ProductDetailResource(Resource):
         return product.to_dict(), 200
 
     @jwt_required()
+    # @admin_required
     def delete(self, id):
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
