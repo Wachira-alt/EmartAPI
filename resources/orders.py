@@ -1,7 +1,8 @@
 from flask_restful import Resource
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import CartItem, Order, OrderItem, Product
+from models import CartItem, Order, OrderItem, Product, User
+from utils.decorators import admin_required
 from extensions import db
 
 class CheckoutResource(Resource):
@@ -29,3 +30,47 @@ class CheckoutResource(Resource):
 
         db.session.commit()
         return order.to_dict(), 201
+    
+class UserOrdersResource(Resource):
+    @jwt_required()
+    def get(self):
+        user_id = get_jwt_identity()
+        user = User.query.get_or_404(user_id)
+        orders = [order.to_dict() for order in user.orders]
+        return orders, 200
+class AdminOrderListResource(Resource):
+    @jwt_required()
+    @admin_required  # Protect this route
+    def get(self):
+        orders = Order.query.all()
+        return [order.to_dict() for order in orders], 200
+class AdminOrderCancelResource(Resource):
+    @jwt_required()
+    @admin_required
+    def patch(self, order_id):
+        order = Order.query.get_or_404(order_id)
+        if order.status == "cancelled":
+            return {"error": "Already cancelled"}, 400
+
+        order.status = "cancelled"
+        db.session.commit()
+        return order.to_dict(), 200
+    
+class AdminOrderStatusResource(Resource):
+    @jwt_required()
+    @admin_required
+    def patch(self, order_id):
+        order = Order.query.get_or_404(order_id)
+        data = request.get_json()
+        new_status = data.get("status")
+
+        valid_statuses = ["pending", "processing", "shipped", "delivered", "cancelled"]
+        if new_status not in valid_statuses:
+            return {"error": "Invalid status"}, 400
+
+        order.status = new_status
+        db.session.commit()
+        return order.to_dict(), 200
+
+       
+    
